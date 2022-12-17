@@ -12,8 +12,9 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Bar } from "./Bar";
-import { Nodes, NodesState } from "./Nodes";
 import shallow from "zustand/shallow";
+
+import { Nodes, NodesState } from "./Nodes";
 
 const selector = (state: NodesState) => ({
   nodes: state.nodes,
