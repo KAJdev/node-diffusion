@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
+import { Trash2 } from "lucide-react";
 import { memo } from "react";
-import { Handle, Position, NodeProps } from "reactflow";
+import { Handle, Position, NodeProps, NodeToolbar } from "reactflow";
 import "reactflow/dist/style.css";
 import { Nodes } from ".";
 import { Label } from "../Label";
@@ -11,8 +12,9 @@ export type Initial = NodeProps<{
 }>;
 
 export const Initial = memo(function Initial(node: Initial) {
-  const { editNode } = Nodes.use((state) => ({
+  const { editNode, deleteNode } = Nodes.use((state) => ({
     editNode: state.editNode,
+    deleteNode: state.deleteNode,
   }));
 
   return (
@@ -22,6 +24,17 @@ export const Initial = memo(function Initial(node: Initial) {
         position={Position.Right}
         className="!border-none !bg-white !p-1"
       />
+
+      <NodeToolbar isVisible={node.selected}>
+        <div className="bg-neutral-800 rounded flex flex-row overflow-hidden">
+          <button
+            onClick={() => deleteNode(node.id)}
+            className="p-2 hover:bg-white/10 active:bg-white/20 text-red-400/80 duration-200 border-r border-white/10 first-of-type:border-l-transparent last-of-type:border-r-transparent"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </NodeToolbar>
 
       {node.data.active ? (
         <button

@@ -23,7 +23,8 @@ export type NodesState = {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addNode: (node: Node) => void;
-  editNode: <T>(id: string, newData: Node<T>) => void;
+  editNode: (id: string, newData: any) => void;
+  deleteNode: (id: string) => void;
 };
 
 export declare namespace Nodes {
@@ -64,17 +65,28 @@ export namespace Nodes {
         nodes: [...get().nodes, node],
       });
     },
-    editNode: (id: string, newData: Node<any>) => {
+    editNode: (id: string, newData: any) => {
       set({
         nodes: get().nodes.map((node) => {
           if (node.id === id) {
             return {
               ...node,
-              ...newData,
+              data: {
+                ...node.data,
+                ...newData,
+              },
             };
           }
           return node;
         }),
+      });
+    },
+    deleteNode: (id: string) => {
+      set({
+        nodes: get().nodes.filter((node) => node.id !== id),
+        edges: get().edges.filter(
+          (edge) => edge.source !== id && edge.target !== id
+        ),
       });
     },
   }));

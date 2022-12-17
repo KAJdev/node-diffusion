@@ -30,6 +30,7 @@ export function Bar({ onCreateNode }: Bar) {
               url: "https://place.dog/512/512",
               prompt: "a dog",
               steps: 30,
+              cfg_scale: 7,
             },
           })
         }
@@ -45,6 +46,7 @@ export function Bar({ onCreateNode }: Bar) {
             data: {
               prompt: "a dog",
               temperature: 30,
+              prediction: "",
             },
           })
         }
