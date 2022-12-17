@@ -15,18 +15,18 @@ export const Transformer = memo(function Transformer(node: Transformer) {
       <Handle
         type="source"
         position={Position.Top}
-        className="!rounded-b !bg-neutral-800 !border-none !w-5 !h-3"
+        className="!border-none !bg-white !p-1"
       />
       <Handle
         type="target"
         position={Position.Bottom}
-        className="!rounded-t !bg-neutral-800 !border-none !w-5 !h-3"
+        className="!border-none !bg-white !p-1"
       />
 
       <div className="flex flex-col gap-1 text-sm">
         <Label>Prompt</Label>
         <textarea
-          className="px-1 py-[1px] rounded bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+          className="px-1 py-[1px] rounded bg-neutral-900/50 nodrag focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
           value={node.data.prompt}
         />
       </div>
@@ -34,7 +34,7 @@ export const Transformer = memo(function Transformer(node: Transformer) {
       <div className="flex flex-col gap-1 text-sm">
         <Label>Prediction</Label>
         <textarea
-          className="px-1 py-[1px] rounded bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+          className="px-1 py-[1px] rounded bg-neutral-900/50 nodrag focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
           value={node.data.prompt}
           contentEditable={false}
         />

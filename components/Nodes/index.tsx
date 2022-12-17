@@ -23,6 +23,7 @@ export type NodesState = {
   onEdgesChange: OnEdgesChange;
   onConnect: OnConnect;
   addNode: (node: Node) => void;
+  editNode: <T>(id: string, newData: Node<T>) => void;
 };
 
 export declare namespace Nodes {
@@ -61,6 +62,19 @@ export namespace Nodes {
     addNode: (node: Node) => {
       set({
         nodes: [...get().nodes, node],
+      });
+    },
+    editNode: (id: string, newData: Node<any>) => {
+      set({
+        nodes: get().nodes.map((node) => {
+          if (node.id === id) {
+            return {
+              ...node,
+              ...newData,
+            };
+          }
+          return node;
+        }),
       });
     },
   }));

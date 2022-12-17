@@ -42,6 +42,13 @@ export function Editor() {
         }}
         nodeTypes={Nodes.nodeTypes}
         className="bg-neutral-900"
+        defaultEdgeOptions={{
+          type: "smoothstep",
+          style: {
+            stroke: "#3b3b3b",
+            strokeWidth: 2,
+          },
+        }}
       >
         <Background />
         <Controls />

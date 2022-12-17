@@ -17,12 +17,12 @@ export const Image = memo(function Image(node: Image) {
       <Handle
         type="source"
         position={Position.Left}
-        className="!rounded-r !bg-neutral-800 !border-none !h-5 !w-1 !pr-2 z-0"
+        className="!border-none !bg-white !p-1"
       />
       <Handle
         type="target"
         position={Position.Right}
-        className="!rounded-l !bg-neutral-800 !border-none !h-5 !w-1 !pl-2 z-0"
+        className="!border-none !bg-white !p-1"
       />
 
       <img
@@ -34,7 +34,7 @@ export const Image = memo(function Image(node: Image) {
       <div className="flex flex-col gap-1 text-sm">
         <Label>Prompt</Label>
         <textarea
-          className="px-1 py-[1px] rounded bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+          className="px-1 py-[1px] rounded nodrag bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
           value={node.data.prompt}
         />
       </div>
@@ -43,7 +43,7 @@ export const Image = memo(function Image(node: Image) {
         <input
           type="number"
           value={node.data.steps}
-          className="px-1 py-[1px] rounded w-1/2 bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+          className="px-1 py-[1px] rounded w-1/2 nodrag bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
         />
       </div>
       <div className="flex flex-row gap-1 justify-between items-center text-sm">
@@ -51,7 +51,7 @@ export const Image = memo(function Image(node: Image) {
         <input
           type="number"
           value={node.data.steps}
-          className="px-1 py-[1px] rounded w-1/2 bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+          className="px-1 py-[1px] rounded w-1/2 nodrag bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
         />
       </div>
     </div>
