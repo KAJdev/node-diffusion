@@ -403,7 +403,7 @@ export function Output({
         )}
       </Label>
       {value && (
-        <div className="text-xs border border-white/5 rounded p-1 text-white/75">
+        <div className="text-xs border border-white/5 rounded p-1 text-white/75 break-all">
           {value.toString().replace(/^[\r\n\s]+|[\r\n\s]+$/g, "")}
         </div>
       )}

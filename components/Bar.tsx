@@ -36,7 +36,7 @@ export function Bar({ onCreateNode }: Bar) {
                 prompt: "",
                 temperature: 0,
                 top_p: 0,
-                repetition_penalty: 0,
+                frequency_penalty: 0,
               },
               output: {
                 prediction: "",
@@ -68,11 +68,14 @@ export function Bar({ onCreateNode }: Bar) {
       <Button
         onClick={() =>
           onCreateNode({
-            type: "Prompt",
+            type: "Concat",
             data: {
-              input: {},
+              input: {
+                first: "",
+                second: "",
+              },
               output: {
-                prompt: "",
+                final: "",
               },
             },
           })

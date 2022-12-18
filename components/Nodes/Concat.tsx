@@ -24,19 +24,20 @@ import {
   Variables,
 } from "../Node";
 
-export type Prompt = NodeProps<{
+export type Concat = NodeProps<{
   locked: boolean;
   running: boolean;
   repeating: boolean;
   input: {
-    prompt: string;
+    first: string;
+    second: string;
   };
   output: {
-    prompt: string;
+    final: string;
   };
 }>;
 
-export function Prompt(node: Prompt) {
+export function Concat(node: Concat) {
   const { editNode, deleteNode, nodes, edges } = Nodes.use((state) => ({
     editNode: state.editNode,
     deleteNode: state.deleteNode,
@@ -44,16 +45,8 @@ export function Prompt(node: Prompt) {
     edges: state.edges,
   }));
 
-  useEffect(() => {
-    editNode(node.id, {
-      output: {
-        prompt: node.data.input.prompt,
-      },
-    });
-  }, [editNode, node.data.input.prompt, node.id]);
-
   return (
-    <Panel name="Prompt" running={node.data.running} selected={node.selected}>
+    <Panel name="Concat" running={node.data.running} selected={node.selected}>
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() =>
@@ -72,26 +65,37 @@ export function Prompt(node: Prompt) {
 
       <Variables>
         <TextVariable
-          name="prompt"
-          value={node.data.output.prompt || ""}
-          label="Prompt"
+          name="first"
+          value={node.data.input.first || ""}
+          label="String A"
+          nodeID={node.id}
+        />
+        <TextVariable
+          name="second"
+          value={node.data.input.second || ""}
+          label="String B"
           nodeID={node.id}
         />
       </Variables>
 
       <Outputs>
-        <Output label="Prompt" name="prompt" nodeID={node.id} type="string" />
+        <Output
+          label="Concatenated String"
+          name="final"
+          nodeID={node.id}
+          type="string"
+        />
       </Outputs>
     </Panel>
   );
 }
 
-export namespace Prompt {
+export namespace Concat {
   export async function run(node: Node): Promise<any> {
     return {
-      prompt: node.data.output.prompt,
+      final: node.data.input.first + node.data.input.second,
     };
   }
 
-  export const Memo = memo(Prompt);
+  export const Memo = memo(Concat);
 }

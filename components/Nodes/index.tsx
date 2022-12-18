@@ -1,7 +1,7 @@
 import { Image } from "./Image";
 import { Transformer } from "./Transformer";
 import { RandomNumber } from "./RandomNumber";
-import { Prompt } from "./Prompt";
+import { Concat } from "./Concat";
 import create from "zustand";
 import {
   Connection,
@@ -32,20 +32,20 @@ export type NodesState = {
 };
 
 export declare namespace Nodes {
-  export { Image, Transformer, RandomNumber, Prompt };
+  export { Image, Transformer, RandomNumber, Concat };
 }
 
 export namespace Nodes {
   Nodes.Image = Image;
   Nodes.Transformer = Transformer;
   Nodes.RandomNumber = RandomNumber;
-  Nodes.Prompt = Prompt;
+  Nodes.Concat = Concat;
 
   export const nodeTypes = {
     Image: Nodes.Image.Memo,
     Transformer: Nodes.Transformer.Memo,
     RandomNumber: Nodes.RandomNumber.Memo,
-    Prompt: Nodes.Prompt.Memo,
+    Concat: Nodes.Concat.Memo,
   };
 
   export const use = create<NodesState>((set, get) => ({
@@ -118,8 +118,8 @@ export namespace Nodes {
         return Nodes.Transformer.run(node);
       case "RandomNumber":
         return Nodes.RandomNumber.run(node);
-      case "Prompt":
-        return Nodes.Prompt.run(node);
+      case "Concat":
+        return Nodes.Concat.run(node);
       default:
         throw new Error(`Node type ${node.type} not found`);
     }
@@ -186,10 +186,15 @@ export namespace Nodes {
       return;
     }
 
-    const sourcePromises = sourceNodes.map((node) => resolveNode(node.id));
+    const sourcePromises = sourceNodes.map((node) => {
+      console.log(`Resolving source node ${node.id}`);
+      return resolveSingleNode(node.id);
+    });
 
     if (sourcePromises.length) {
+      console.log(`Waiting for ${sourcePromises} sources to resolve`);
       await Promise.all(sourcePromises);
+      console.log(`Sources resolved`);
     }
 
     // probably need to refetch sources here, in case they changed
@@ -237,6 +242,14 @@ export namespace Nodes {
 
     // update the node's output
     Nodes.use.getState().editNode(nodeid, { output, running: false });
+
+    console.log(
+      "returning output for node",
+      nodeid,
+      output,
+      "had input",
+      input
+    );
 
     return output;
   }
