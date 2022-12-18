@@ -19,7 +19,7 @@ import {
 export type RandomNumber = NodeProps<{
   locked: boolean;
   running: boolean;
-  resolved: boolean;
+  repeating: boolean;
   input: {
     min: number;
     max: number;

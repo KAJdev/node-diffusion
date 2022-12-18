@@ -86,7 +86,7 @@ export function Editor() {
               ...newNode.data,
               locked: false,
               running: false,
-              resolved: false,
+              repeating: false,
             },
             id: Math.random().toString(),
             position: {

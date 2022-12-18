@@ -125,7 +125,38 @@ export namespace Nodes {
     }
   }
 
-  export async function resolveNode(nodeid: string): Promise<any> {
+  export async function resolveNode(
+    nodeid: string,
+    repeat?: boolean
+  ): Promise<any> {
+    const node = Nodes.use.getState().nodes.find((node) => node.id === nodeid);
+
+    if (!node) {
+      throw new Error(`Node ${nodeid} not found`);
+    }
+
+    // set node repeating to true
+    if (repeat) {
+      Nodes.use.getState().editNode(nodeid, { repeating: true });
+
+      while (true) {
+        await resolveSingleNode(nodeid);
+
+        // check if node is still repeating
+        const node = Nodes.use
+          .getState()
+          .nodes.find((node) => node.id === nodeid);
+
+        if (!node || !node.data.repeating) {
+          break;
+        }
+      }
+    } else {
+      resolveSingleNode(nodeid);
+    }
+  }
+
+  export async function resolveSingleNode(nodeid: string): Promise<any> {
     // get the node
     const node = Nodes.use.getState().nodes.find((node) => node.id === nodeid);
 

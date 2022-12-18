@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { Play, Trash2, Lock, Unlock } from "lucide-react";
+import { Play, Trash2, Lock, Unlock, Repeat } from "lucide-react";
 import { memo } from "react";
 import {
   Handle,
@@ -28,7 +28,7 @@ import {
 export type Transformer = NodeProps<{
   locked: boolean;
   running: boolean;
-  resolved: boolean;
+  repeating: boolean;
   input: {
     prompt: string;
     temperature: number;
@@ -49,12 +49,28 @@ export function Transformer(node: Transformer) {
   return (
     <Panel name="GPT-3" running={node.data.running}>
       <Toolbar show={node.selected}>
+        {!node.data.running && (
+          <ToolButton
+            onClick={() => {
+              Nodes.resolveNode(node.id);
+            }}
+          >
+            <Play size={16} />
+          </ToolButton>
+        )}
         <ToolButton
           onClick={() => {
-            Nodes.resolveNode(node.id);
+            if (node.data.repeating) {
+              editNode(node.id, {
+                repeating: false,
+              });
+            } else {
+              Nodes.resolveNode(node.id, true);
+            }
           }}
+          active={node.data.repeating}
         >
-          <Play size={16} />
+          <Repeat size={16} />
         </ToolButton>
         <ToolButton
           onClick={() =>

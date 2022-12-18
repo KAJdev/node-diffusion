@@ -109,10 +109,11 @@ export function NumberVariable({
   label: string;
   name: string;
 }) {
-  const { nodes, editNode } = Nodes.use((state) => {
+  const { nodes, editNode, edges } = Nodes.use((state) => {
     return {
       nodes: state.nodes,
       editNode: state.editNode,
+      edges: state.edges,
     };
   });
 
@@ -135,6 +136,15 @@ export function NumberVariable({
     }
   }, [labelRef, handleRef, updateNodeInternals, nodeID]);
 
+  // get connections
+  const edgeConnections = node ? getConnectedEdges([node], edges) : [];
+
+  // check if its connected
+  const isConnected =
+    edgeConnections.find(
+      (edge) => edge.targetHandle === `input-${name}` && edge.target === nodeID
+    ) !== undefined;
+
   return (
     <div
       className="flex flex-row gap-1 justify-between items-center text-sm relative"
@@ -153,7 +163,12 @@ export function NumberVariable({
       <input
         type="number"
         value={value}
-        className="px-1 py-[1px] rounded w-1/2 nodrag bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+        className={`px-1 py-[1px] rounded w-1/2 nodrag bg-neutral-900/50 focus:outline-none focus:border-indigo-500/50 border-[2px] ${
+          isConnected
+            ? "bg-transparent resize-none border-white/10 border"
+            : "bg-neutral-900/50 border-transparent border-[2px]"
+        }`}
+        disabled={isConnected}
         onChange={(e) => {
           if (node) {
             editNode(nodeID, {
@@ -248,7 +263,7 @@ export function TextVariable({
       </Label>
       <textarea
         ref={textareaRef}
-        className={`px-1 py-[1px] rounded nodrag ${
+        className={`px-1 py-[1px] rounded nodrag overflow-y-hidden ${
           isConnected
             ? "bg-transparent resize-none border-white/10 border"
             : "bg-neutral-900/50 border-transparent border-[2px]"
@@ -385,7 +400,7 @@ export function Output({
       </Label>
       {value && (
         <div className="text-xs border border-white/5 rounded p-1 text-white/75">
-          {value}
+          {value.toString().replace(/^[\r\n\s]+|[\r\n\s]+$/g, "")}
         </div>
       )}
     </div>

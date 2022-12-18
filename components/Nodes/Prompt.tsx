@@ -27,7 +27,7 @@ import {
 export type Prompt = NodeProps<{
   locked: boolean;
   running: boolean;
-  resolved: boolean;
+  repeating: boolean;
   input: {
     prompt: string;
   };

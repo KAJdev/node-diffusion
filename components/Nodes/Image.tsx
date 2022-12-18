@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { ImageIcon, Lock, Play, Trash2, Unlock } from "lucide-react";
+import { ImageIcon, Lock, Play, Repeat, Trash2, Unlock } from "lucide-react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   Handle,
@@ -29,7 +29,7 @@ import {
 export type Image = NodeProps<{
   locked: boolean;
   running: boolean;
-  resolved: boolean;
+  repeating: boolean;
   input: {
     init: string;
     prompt: string;
@@ -58,12 +58,28 @@ export function Image(node: Image) {
   return (
     <Panel name="Stable Diffusion" running={node.data.running}>
       <Toolbar show={node.selected}>
+        {!node.data.running && (
+          <ToolButton
+            onClick={() => {
+              Nodes.resolveNode(node.id);
+            }}
+          >
+            <Play size={16} />
+          </ToolButton>
+        )}
         <ToolButton
           onClick={() => {
-            Nodes.resolveNode(node.id);
+            if (node.data.repeating) {
+              editNode(node.id, {
+                repeating: false,
+              });
+            } else {
+              Nodes.resolveNode(node.id, true);
+            }
           }}
+          active={node.data.repeating}
         >
-          <Play size={16} />
+          <Repeat size={16} />
         </ToolButton>
         <ToolButton
           onClick={() =>
