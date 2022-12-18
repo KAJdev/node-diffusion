@@ -1,5 +1,6 @@
 import {
   Connection,
+  ConnectionLineType,
   EdgeChange,
   MarkerType,
   NodeChange,
@@ -61,6 +62,12 @@ export function Editor() {
             color: "#3b3b3b",
           },
         }}
+        nodeOrigin={[0.5, 0.5]}
+        connectionLineStyle={{
+          stroke: "#3b3b3b",
+          strokeWidth: 2,
+        }}
+        connectionLineType={ConnectionLineType.SmoothStep}
       >
         <Background />
         <Controls />
@@ -75,6 +82,12 @@ export function Editor() {
 
           addNode({
             ...newNode,
+            data: {
+              ...newNode.data,
+              locked: false,
+              running: false,
+              resolved: false,
+            },
             id: Math.random().toString(),
             position: {
               x: 0,

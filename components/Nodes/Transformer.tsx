@@ -47,9 +47,13 @@ export function Transformer(node: Transformer) {
   }));
 
   return (
-    <Panel name="GPT-3">
+    <Panel name="GPT-3" running={node.data.running}>
       <Toolbar show={node.selected}>
-        <ToolButton onClick={() => {}}>
+        <ToolButton
+          onClick={() => {
+            Nodes.resolveNode(node.id);
+          }}
+        >
           <Play size={16} />
         </ToolButton>
         <ToolButton
@@ -111,6 +115,11 @@ export namespace Transformer {
   export async function run(node: Node): Promise<any> {
     const { prompt, temperature, top_p, frequency_penalty } = node.data.input;
 
+    if (!prompt)
+      return {
+        prediction: "",
+      };
+
     const response = await fetch("https://api.diffusion.chat/text", {
       method: "POST",
       headers: {
@@ -126,10 +135,10 @@ export namespace Transformer {
 
     const json = await response.json();
 
-    console.log(json);
-
     return {
       prediction: json.choices.pop().text,
     };
   }
+
+  export const Memo = memo(Transformer);
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import { Lock, Play, Trash2, Unlock } from "lucide-react";
-import { memo, useMemo, useRef } from "react";
+import { ImageIcon, Lock, Play, Trash2, Unlock } from "lucide-react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   Handle,
   Position,
@@ -47,8 +47,16 @@ export function Image(node: Image) {
     deleteNode: state.deleteNode,
   }));
 
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!node.data.output.image) {
+      setLoaded(false);
+    }
+  }, [node.data.output.image]);
+
   return (
-    <Panel name="Stable Diffusion">
+    <Panel name="Stable Diffusion" running={node.data.running}>
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() => {
@@ -73,11 +81,20 @@ export function Image(node: Image) {
       </Toolbar>
 
       <Content>
-        <img
-          src={node.data.output.image}
-          className="rounded max-w-80 max-h-80"
-          alt="graph image"
-        />
+        {node.data.output.image && (
+          <img
+            src={node.data.output.image}
+            className="rounded max-w-80 max-h-80"
+            alt="graph image"
+            onLoad={() => setLoaded(true)}
+          />
+        )}
+        {!node.data.output.image && !loaded && (
+          <div className="aspect-square max-w-80 max-h-80 flex rounded bg-black/20 justify-center items-center flex-col text-neutral-600">
+            <ImageIcon size={32} />
+            <h1 className="font-semibold text-lg">Image</h1>
+          </div>
+        )}
       </Content>
 
       <Variables>
@@ -113,6 +130,12 @@ export namespace Image {
     const { input } = node.data;
     const { init, steps, cfg_scale, prompt } = input;
 
+    if (!prompt) {
+      return {
+        image: node.data.output.image,
+      };
+    }
+
     const data = await fetch("https://api.diffusion.chat/image", {
       method: "POST",
       body: JSON.stringify({
@@ -127,4 +150,6 @@ export namespace Image {
       image: data[0].image,
     };
   }
+
+  export const Memo = memo(Image);
 }

@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import {
+  getConnectedEdges,
   Handle,
   NodeToolbar,
   Position,
@@ -12,12 +13,20 @@ import { Nodes } from "./Nodes";
 export function Panel({
   children,
   name,
+  running,
 }: {
   children?: React.ReactNode;
   name: string;
+  running?: boolean;
 }) {
   return (
-    <div className="rounded flex flex-col bg-neutral-800 w-[15rem] drop-shadow z-10 border border-white/10">
+    <div
+      className={`rounded flex flex-col bg-neutral-800 w-[20rem] z-10 ${
+        running
+          ? "border-animate drop-shadow-2xl animate-pulse duration-150"
+          : "ring-white/20 drop-shadow ring-[1px]"
+      }`}
+    >
       <div className="p-2 border-b border-white/10">
         <h1 className="opacity-80 font-medium">{name}</h1>
       </div>
@@ -49,7 +58,7 @@ export function Outputs({ children }: { children?: React.ReactNode }) {
 }
 
 export function Content({ children }: { children?: React.ReactNode }) {
-  return <div className="p-2 flex flex-col gap-2">{children}</div>;
+  return <div className="p-2 flex flex-col gap-2 relative">{children}</div>;
 }
 
 export function Toolbar({
@@ -171,10 +180,11 @@ export function TextVariable({
   label: string;
   name: string;
 }) {
-  const { nodes, editNode } = Nodes.use((state) => {
+  const { nodes, editNode, edges } = Nodes.use((state) => {
     return {
       nodes: state.nodes,
       editNode: state.editNode,
+      edges: state.edges,
     };
   });
 
@@ -184,6 +194,7 @@ export function TextVariable({
 
   const labelRef = useRef<HTMLDivElement>(null);
   const handleRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (labelRef.current && handleRef.current) {
@@ -197,9 +208,32 @@ export function TextVariable({
     }
   }, [labelRef, handleRef, updateNodeInternals, nodeID]);
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      const styles = window.getComputedStyle(textareaRef.current);
+      textareaRef.current.style.height = "auto";
+
+      const newHeight =
+        textareaRef.current.scrollHeight +
+        parseInt(styles.paddingTop) +
+        parseInt(styles.paddingBottom);
+
+      textareaRef.current.style.height = newHeight + "px";
+    }
+  }, [value, textareaRef]);
+
+  // get connections
+  const edgeConnections = node ? getConnectedEdges([node], edges) : [];
+
+  // check if its connected
+  const isConnected =
+    edgeConnections.find(
+      (edge) => edge.targetHandle === `input-${name}` && edge.target === nodeID
+    ) !== undefined;
+
   return (
     <div
-      className="flex flex-row gap-1 justify-between items-center text-sm relative"
+      className="flex flex-col gap-1 justify-between text-sm relative"
       ref={labelRef}
     >
       <Label>
@@ -213,8 +247,14 @@ export function TextVariable({
         {label}
       </Label>
       <textarea
-        className="px-1 py-[1px] rounded bg-neutral-900/50 nodrag focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
+        ref={textareaRef}
+        className={`px-1 py-[1px] rounded nodrag ${
+          isConnected
+            ? "bg-transparent resize-none border-white/10 border"
+            : "bg-neutral-900/50 border-transparent border-[2px]"
+        } focus:outline-none focus:border-indigo-500/50`}
         value={value}
+        disabled={isConnected}
         onChange={(e) => {
           if (node) {
             editNode(nodeID, {

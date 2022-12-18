@@ -53,7 +53,7 @@ export function Prompt(node: Prompt) {
   }, [editNode, node.data.input.prompt, node.id]);
 
   return (
-    <Panel name="Prompt">
+    <Panel name="Prompt" running={node.data.running}>
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() =>
@@ -92,4 +92,6 @@ export namespace Prompt {
       prompt: node.data.output.prompt,
     };
   }
+
+  export const Memo = memo(Prompt);
 }

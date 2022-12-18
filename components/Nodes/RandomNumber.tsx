@@ -36,7 +36,7 @@ export function RandomNumber(node: RandomNumber) {
   }));
 
   return (
-    <Panel name="Random Number">
+    <Panel name="Random Number" running={node.data.running}>
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() =>
@@ -82,4 +82,6 @@ export namespace RandomNumber {
       number: Math.random() * (max - min) + min,
     };
   }
+
+  export const Memo = memo(RandomNumber);
 }

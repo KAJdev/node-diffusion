@@ -13,13 +13,13 @@ export function Bar({ onCreateNode }: Bar) {
             type: "Image",
             data: {
               input: {
-                init: "https://place.dog/512/512",
-                prompt: "a dog",
+                init: "",
+                prompt: "",
                 steps: 30,
                 cfg_scale: 7,
               },
               output: {
-                image: "https://place.dog/512/512",
+                image: "",
               },
             },
           })
@@ -33,7 +33,7 @@ export function Bar({ onCreateNode }: Bar) {
             type: "Transformer",
             data: {
               input: {
-                prompt: "a dog",
+                prompt: "",
                 temperature: 0,
                 top_p: 0,
                 repetition_penalty: 0,
@@ -72,7 +72,7 @@ export function Bar({ onCreateNode }: Bar) {
             data: {
               input: {},
               output: {
-                prompt: "a dog",
+                prompt: "",
               },
             },
           })
