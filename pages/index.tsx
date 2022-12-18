@@ -1,4 +1,5 @@
 import Head from "next/head";
+import { ReactFlowProvider } from "reactflow";
 import { Editor } from "../components/Editor";
 
 export default function Home() {
@@ -11,7 +12,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-screen h-screen">
-        <Editor />
+        <ReactFlowProvider>
+          <Editor />
+        </ReactFlowProvider>
       </main>
     </>
   );

@@ -1,4 +1,10 @@
-import { Connection, EdgeChange, NodeChange } from "@reactflow/core";
+import {
+  Connection,
+  EdgeChange,
+  MarkerType,
+  NodeChange,
+  useReactFlow,
+} from "@reactflow/core";
 import React, { useCallback, useState } from "react";
 import ReactFlow, {
   addEdge,
@@ -29,6 +35,8 @@ export function Editor() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } =
     Nodes.use(selector, shallow);
 
+  // const flow = useReactFlow();
+
   return (
     <>
       <ReactFlow
@@ -48,6 +56,10 @@ export function Editor() {
             stroke: "#3b3b3b",
             strokeWidth: 2,
           },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: "#3b3b3b",
+          },
         }}
       >
         <Background />
@@ -56,7 +68,19 @@ export function Editor() {
       </ReactFlow>
       <Bar
         onCreateNode={(newNode) => {
-          addNode(newNode);
+          // const pos = flow.project({
+          //   x: window.innerWidth / 2,
+          //   y: window.innerHeight / 2,
+          // });
+
+          addNode({
+            ...newNode,
+            id: Math.random().toString(),
+            position: {
+              x: 0,
+              y: 0,
+            },
+          });
         }}
       />
     </>

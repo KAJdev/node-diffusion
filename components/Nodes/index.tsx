@@ -1,6 +1,7 @@
 import { Image } from "./Image";
 import { Transformer } from "./Transformer";
-import { Initial } from "./Initial";
+import { RandomNumber } from "./RandomNumber";
+import { Prompt } from "./Prompt";
 import create from "zustand";
 import {
   Connection,
@@ -14,6 +15,8 @@ import {
   OnConnect,
   applyNodeChanges,
   applyEdgeChanges,
+  getIncomers,
+  getConnectedEdges,
 } from "reactflow";
 
 export type NodesState = {
@@ -28,18 +31,20 @@ export type NodesState = {
 };
 
 export declare namespace Nodes {
-  export { Image, Transformer, Initial };
+  export { Image, Transformer, RandomNumber, Prompt };
 }
 
 export namespace Nodes {
   Nodes.Image = Image;
   Nodes.Transformer = Transformer;
-  Nodes.Initial = Initial;
+  Nodes.RandomNumber = RandomNumber;
+  Nodes.Prompt = Prompt;
 
   export const nodeTypes = {
     Image: Nodes.Image,
     Transformer: Nodes.Transformer,
-    Initial: Nodes.Initial,
+    RandomNumber: Nodes.RandomNumber,
+    Prompt: Nodes.Prompt,
   };
 
   export const use = create<NodesState>((set, get) => ({
@@ -90,4 +95,70 @@ export namespace Nodes {
       });
     },
   }));
+
+  export async function runNode(node: Node): Promise<any> {
+    switch (node.type) {
+      case "Image":
+        return Nodes.Image.run(node);
+      case "Transformer":
+        return Nodes.Transformer.run(node);
+      case "RandomNumber":
+        return Nodes.RandomNumber.run(node);
+      case "Prompt":
+        return Nodes.Prompt.run(node);
+      default:
+        throw new Error(`Node type ${node.type} not found`);
+    }
+  }
+
+  export async function resolveNode(nodeid: string): Promise<any> {
+    // get the node
+    const node = Nodes.use.getState().nodes.find((node) => node.id === nodeid);
+
+    if (!node) {
+      throw new Error(`Node ${nodeid} not found`);
+    }
+
+    const { nodes, edges } = Nodes.use.getState();
+
+    const sourceNodes = getIncomers(node, nodes, edges);
+
+    const sourcePromises = sourceNodes.map((node) => resolveNode(node.id));
+
+    await Promise.all(sourcePromises);
+
+    // probably need to refetch sources here, in case they changed
+    const newSources = Nodes.use.getState();
+    const sourceNodes2 = getIncomers(node, newSources.nodes, newSources.edges);
+    const sourceEdges2 = getConnectedEdges([node], newSources.edges);
+
+    // populate the node's input with the output of the sources
+    const input = sourceEdges2.reduce((acc, edge) => {
+      const sourceNode = sourceNodes2.find((node) => node.id === edge.source);
+      if (sourceNode) {
+        // @ts-ignore
+        acc[edge.targetHandle.split("-").pop()] =
+          // @ts-ignore
+          sourceNode.data.output[edge.sourceHandle.split("-").pop()];
+      }
+      return acc;
+    }, {});
+
+    // set the node's input
+    Nodes.use.getState().editNode(nodeid, {
+      input: {
+        ...node.data.input,
+        ...input,
+      },
+      running: true,
+    });
+
+    // run the node
+    const output = await runNode(node);
+
+    // update the node's output
+    Nodes.use.getState().editNode(nodeid, { output, running: false });
+
+    return output;
+  }
 }

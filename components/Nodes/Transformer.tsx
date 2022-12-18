@@ -1,70 +1,135 @@
 /* eslint-disable @next/next/no-img-element */
-import { Trash2 } from "lucide-react";
+import { Play, Trash2, Lock, Unlock } from "lucide-react";
 import { memo } from "react";
-import { Handle, Position, NodeProps, NodeToolbar } from "reactflow";
+import {
+  Handle,
+  Position,
+  NodeProps,
+  NodeToolbar,
+  getIncomers,
+  getConnectedEdges,
+  useUpdateNodeInternals,
+  Node,
+} from "reactflow";
 import "reactflow/dist/style.css";
 import { Nodes } from ".";
 import { Label } from "../Label";
+import {
+  NumberVariable,
+  Output,
+  Outputs,
+  Panel,
+  TextVariable,
+  Toolbar,
+  ToolButton,
+  Variables,
+} from "../Node";
 
 export type Transformer = NodeProps<{
-  prompt: string;
-  temperature: number;
-
-  prediction: string;
+  locked: boolean;
+  running: boolean;
+  resolved: boolean;
+  input: {
+    prompt: string;
+    temperature: number;
+    top_p: number;
+    frequency_penalty: number;
+  };
+  output: {
+    prediction: string;
+  };
 }>;
 
-export const Transformer = memo(function Transformer(node: Transformer) {
+export function Transformer(node: Transformer) {
   const { editNode, deleteNode } = Nodes.use((state) => ({
     editNode: state.editNode,
     deleteNode: state.deleteNode,
   }));
 
   return (
-    <div className="rounded p-2 flex flex-col min-w-[15rem] gap-2 bg-neutral-800 drop-shadow z-10 border border-white/10">
-      <Handle
-        type="source"
-        position={Position.Top}
-        className="!border-none !bg-white !p-1"
-      />
-      <Handle
-        type="target"
-        position={Position.Bottom}
-        className="!border-none !bg-white !p-1"
-      />
-
-      <NodeToolbar isVisible={node.selected}>
-        <div className="bg-neutral-800 rounded flex flex-row overflow-hidden">
-          <button
-            onClick={() => deleteNode(node.id)}
-            className="p-2 hover:bg-white/10 active:bg-white/20 text-red-400/80 duration-200 border-r border-white/10 first-of-type:border-l-transparent last-of-type:border-r-transparent"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
-      </NodeToolbar>
-
-      <div className="flex flex-col gap-1 text-sm">
-        <Label>Prompt</Label>
-        <textarea
-          className="px-1 py-[1px] rounded bg-neutral-900/50 nodrag focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
-          value={node.data.prompt}
-          onChange={(e) => {
+    <Panel name="GPT-3">
+      <Toolbar show={node.selected}>
+        <ToolButton onClick={() => {}}>
+          <Play size={16} />
+        </ToolButton>
+        <ToolButton
+          onClick={() =>
             editNode(node.id, {
-              prompt: e.target.value,
-            });
-          }}
-        />
-      </div>
+              locked: !node.data.locked,
+            })
+          }
+          active={node.data.locked}
+        >
+          {node.data.locked ? <Lock size={16} /> : <Unlock size={16} />}
+        </ToolButton>
+        <ToolButton onClick={() => deleteNode(node.id)}>
+          <Trash2 size={16} />
+        </ToolButton>
+      </Toolbar>
 
-      <div className="flex flex-col gap-1 text-sm">
-        <Label>Prediction</Label>
-        <textarea
-          className="px-1 py-[1px] rounded bg-neutral-900/50 nodrag focus:outline-none focus:border-indigo-500/50 border-transparent border-[2px]"
-          value={node.data.prediction}
-          contentEditable={false}
-          onChange={(e) => {}}
+      <Variables>
+        <NumberVariable
+          name="temperature"
+          value={node.data.input.temperature || 0.9}
+          label="Temperature"
+          nodeID={node.id}
         />
-      </div>
-    </div>
+        <NumberVariable
+          name="top_p"
+          value={node.data.input.top_p || 0.9}
+          label="Top P"
+          nodeID={node.id}
+        />
+        <NumberVariable
+          name="frequency_penalty"
+          value={node.data.input.frequency_penalty || 0.0}
+          label="Frequency Penalty"
+          nodeID={node.id}
+        />
+        <TextVariable
+          name="prompt"
+          value={node.data.input.prompt || ""}
+          label="Prompt"
+          nodeID={node.id}
+        />
+      </Variables>
+
+      <Outputs>
+        <Output
+          label="Prediction"
+          name="prediction"
+          nodeID={node.id}
+          type="string"
+          value={node.data.output.prediction || ""}
+        />
+      </Outputs>
+    </Panel>
   );
-});
+}
+
+export namespace Transformer {
+  export async function run(node: Node): Promise<any> {
+    const { prompt, temperature, top_p, frequency_penalty } = node.data.input;
+
+    const response = await fetch("https://api.diffusion.chat/text", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+        temperature,
+        top_p,
+        frequency_penalty,
+      }),
+    });
+
+    const json = await response.json();
+
+    console.log(json);
+
+    return {
+      prediction: json.choices.pop().text,
+    };
+  }
+}

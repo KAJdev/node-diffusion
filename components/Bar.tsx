@@ -1,8 +1,7 @@
-import { FileType2, ImagePlus, Plus } from "lucide-react";
-import { Node } from "reactflow";
+import { Dice2, FileType2, ImagePlus, TextCursorInput } from "lucide-react";
 
 export type Bar = {
-  onCreateNode: (newNode: Node) => void;
+  onCreateNode: (newNode: { type: string; data: any }) => void;
 };
 
 export function Bar({ onCreateNode }: Bar) {
@@ -11,26 +10,17 @@ export function Bar({ onCreateNode }: Bar) {
       <Button
         onClick={() =>
           onCreateNode({
-            id: Math.random().toString(),
-            position: { x: 100, y: 100 },
-            type: "Initial",
-            data: {},
-          })
-        }
-      >
-        <Plus size={18} strokeWidth={2} />
-      </Button>
-      <Button
-        onClick={() =>
-          onCreateNode({
-            id: Math.random().toString(),
-            position: { x: 100, y: 100 },
             type: "Image",
             data: {
-              url: "https://place.dog/512/512",
-              prompt: "a dog",
-              steps: 30,
-              cfg_scale: 7,
+              input: {
+                init: "https://place.dog/512/512",
+                prompt: "a dog",
+                steps: 30,
+                cfg_scale: 7,
+              },
+              output: {
+                image: "https://place.dog/512/512",
+              },
             },
           })
         }
@@ -40,18 +30,55 @@ export function Bar({ onCreateNode }: Bar) {
       <Button
         onClick={() =>
           onCreateNode({
-            id: Math.random().toString(),
-            position: { x: 100, y: 100 },
             type: "Transformer",
             data: {
-              prompt: "a dog",
-              temperature: 30,
-              prediction: "",
+              input: {
+                prompt: "a dog",
+                temperature: 0,
+                top_p: 0,
+                repetition_penalty: 0,
+              },
+              output: {
+                prediction: "",
+              },
             },
           })
         }
       >
         <FileType2 size={18} strokeWidth={2} />
+      </Button>
+      <Button
+        onClick={() =>
+          onCreateNode({
+            type: "RandomNumber",
+            data: {
+              input: {
+                min: 0,
+                max: 1,
+              },
+              output: {
+                number: 0.5,
+              },
+            },
+          })
+        }
+      >
+        <Dice2 size={18} strokeWidth={2} />
+      </Button>
+      <Button
+        onClick={() =>
+          onCreateNode({
+            type: "Prompt",
+            data: {
+              input: {},
+              output: {
+                prompt: "a dog",
+              },
+            },
+          })
+        }
+      >
+        <TextCursorInput size={18} strokeWidth={2} />
       </Button>
     </div>
   );

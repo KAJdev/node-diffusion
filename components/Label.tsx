@@ -1,3 +1,5 @@
 export function Label({ children }: { children?: React.ReactNode }) {
-  return <h2 className="text-sm opacity-60 font-medium">{children}</h2>;
+  return (
+    <h2 className="text-sm text-white/60 font-medium relative">{children}</h2>
+  );
 }
