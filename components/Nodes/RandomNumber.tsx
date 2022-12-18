@@ -36,7 +36,11 @@ export function RandomNumber(node: RandomNumber) {
   }));
 
   return (
-    <Panel name="Random Number" running={node.data.running}>
+    <Panel
+      name="Random Number"
+      running={node.data.running}
+      selected={node.selected}
+    >
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() =>

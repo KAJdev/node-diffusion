@@ -56,7 +56,11 @@ export function Image(node: Image) {
   }, [node.data.output.image]);
 
   return (
-    <Panel name="Stable Diffusion" running={node.data.running}>
+    <Panel
+      name="Stable Diffusion"
+      running={node.data.running}
+      selected={node.selected}
+    >
       <Toolbar show={node.selected}>
         {!node.data.running && (
           <ToolButton
@@ -147,6 +151,12 @@ export namespace Image {
     const { init, steps, cfg_scale, prompt } = input;
 
     if (!prompt) {
+      if (node.data.repeating) {
+        // disable repeating
+        Nodes.use.getState().editNode(node.id, {
+          repeating: false,
+        });
+      }
       return {
         image: node.data.output.image,
       };

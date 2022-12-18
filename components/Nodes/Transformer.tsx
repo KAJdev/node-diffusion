@@ -47,7 +47,7 @@ export function Transformer(node: Transformer) {
   }));
 
   return (
-    <Panel name="GPT-3" running={node.data.running}>
+    <Panel name="GPT-3" running={node.data.running} selected={node.selected}>
       <Toolbar show={node.selected}>
         {!node.data.running && (
           <ToolButton
@@ -131,10 +131,17 @@ export namespace Transformer {
   export async function run(node: Node): Promise<any> {
     const { prompt, temperature, top_p, frequency_penalty } = node.data.input;
 
-    if (!prompt)
+    if (!prompt) {
+      if (node.data.repeating) {
+        // disable repeating
+        Nodes.use.getState().editNode(node.id, {
+          repeating: false,
+        });
+      }
       return {
         prediction: "",
       };
+    }
 
     const response = await fetch("https://api.diffusion.chat/text", {
       method: "POST",

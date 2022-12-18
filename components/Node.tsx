@@ -14,17 +14,21 @@ export function Panel({
   children,
   name,
   running,
+  selected,
 }: {
   children?: React.ReactNode;
   name: string;
   running?: boolean;
+  selected?: boolean;
 }) {
   return (
     <div
       className={`rounded flex flex-col bg-neutral-800 w-[20rem] z-10 ${
         running
           ? "border-animate drop-shadow-2xl animate-pulse duration-150"
-          : "ring-white/20 drop-shadow ring-[1px]"
+          : selected
+          ? "ring"
+          : "ring-[1px] ring-white/20 drop-shadow"
       }`}
     >
       <div className="p-2 border-b border-white/10">

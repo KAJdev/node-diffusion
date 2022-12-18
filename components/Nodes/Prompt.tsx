@@ -53,7 +53,7 @@ export function Prompt(node: Prompt) {
   }, [editNode, node.data.input.prompt, node.id]);
 
   return (
-    <Panel name="Prompt" running={node.data.running}>
+    <Panel name="Prompt" running={node.data.running} selected={node.selected}>
       <Toolbar show={node.selected}>
         <ToolButton
           onClick={() =>
