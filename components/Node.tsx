@@ -158,10 +158,14 @@ export function NumberVariable({
         <Handle
           type="target"
           position={Position.Left}
-          className="!bg-transparent !border-[2px] !border-white !p-1"
+          className={`!bg-transparent !border-[2px] !border-white !w-[12px] !h-[12px] !p-[1px] flex items-center justify-center`}
           ref={handleRef}
           id={`input-${name}`}
-        />
+        >
+          {isConnected && (
+            <div className="w-full h-full rounded-full bg-white" />
+          )}
+        </Handle>
         {label}
       </Label>
       <input
@@ -259,10 +263,14 @@ export function TextVariable({
         <Handle
           type="target"
           position={Position.Left}
-          className="!bg-transparent !border-[2px] !border-white !p-1"
+          className={`!bg-transparent !border-[2px] !border-white !w-[12px] !h-[12px] !p-[1px] flex items-center justify-center`}
           ref={handleRef}
           id={`input-${name}`}
-        />
+        >
+          {isConnected && (
+            <div className="w-full h-full rounded-full bg-white" />
+          )}
+        </Handle>
         {label}
       </Label>
       <textarea
@@ -298,10 +306,11 @@ export function ImageVariable({
   label: string;
   name: string;
 }) {
-  const { nodes, editNode } = Nodes.use((state) => {
+  const { nodes, editNode, edges } = Nodes.use((state) => {
     return {
       nodes: state.nodes,
       editNode: state.editNode,
+      edges: state.edges,
     };
   });
 
@@ -324,6 +333,15 @@ export function ImageVariable({
     }
   }, [labelRef, handleRef, updateNodeInternals, nodeID]);
 
+  // get connections
+  const edgeConnections = node ? getConnectedEdges([node], edges) : [];
+
+  // check if its connected
+  const isConnected =
+    edgeConnections.find(
+      (edge) => edge.targetHandle === `input-${name}` && edge.target === nodeID
+    ) !== undefined;
+
   return (
     <div
       className="flex flex-row gap-1 justify-between items-center text-sm relative"
@@ -333,10 +351,14 @@ export function ImageVariable({
         <Handle
           type="target"
           position={Position.Left}
-          className="!bg-transparent !border-[2px] !border-white !p-1"
+          className={`!bg-transparent !border-[2px] !border-white !w-[12px] !h-[12px] !p-[1px] flex items-center justify-center`}
           ref={handleRef}
           id={`input-${name}`}
-        />
+        >
+          {isConnected && (
+            <div className="w-full h-full rounded-full bg-white" />
+          )}
+        </Handle>
         {label}
       </Label>
     </div>

@@ -1,4 +1,11 @@
-import { Dice2, FileType2, ImagePlus, TextCursorInput } from "lucide-react";
+import {
+  Dice2,
+  File,
+  FileType2,
+  ImagePlus,
+  Regex,
+  TextCursorInput,
+} from "lucide-react";
 
 export type Bar = {
   onCreateNode: (newNode: { type: string; data: any }) => void;
@@ -82,6 +89,40 @@ export function Bar({ onCreateNode }: Bar) {
         }
       >
         <TextCursorInput size={18} strokeWidth={2} />
+      </Button>
+      <Button
+        onClick={() =>
+          onCreateNode({
+            type: "RegexReplace",
+            data: {
+              input: {
+                expression: "",
+                replacement: "",
+                text: "",
+              },
+              output: {
+                final: "",
+              },
+            },
+          })
+        }
+      >
+        <Regex size={18} strokeWidth={2} />
+      </Button>
+      <Button
+        onClick={() =>
+          onCreateNode({
+            type: "LoadImage",
+            data: {
+              input: {},
+              output: {
+                image: "",
+              },
+            },
+          })
+        }
+      >
+        <File size={18} strokeWidth={2} />
       </Button>
     </div>
   );

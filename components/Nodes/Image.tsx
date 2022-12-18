@@ -162,15 +162,40 @@ export namespace Image {
       };
     }
 
-    const data = await fetch("https://api.diffusion.chat/image", {
-      method: "POST",
-      body: JSON.stringify({
-        steps,
-        scale: cfg_scale,
-        prompt,
-        count: 1,
-      }),
-    }).then((res) => res.json());
+    let data: any = {};
+    if (init && init.length > 0) {
+      // init is probably a dataurl or a regular image. Need to fetch and convert to base64
+      const init_d = await fetch(init);
+      const init_b = await init_d.blob();
+      const init_b64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result);
+        };
+        reader.readAsDataURL(init_b);
+      });
+
+      data = await fetch("https://api.diffusion.chat/init", {
+        method: "POST",
+        body: JSON.stringify({
+          steps,
+          scale: cfg_scale,
+          prompt,
+          count: 1,
+          init: init_b64,
+        }),
+      }).then((res) => res.json());
+    } else {
+      data = await fetch("https://api.diffusion.chat/image", {
+        method: "POST",
+        body: JSON.stringify({
+          steps,
+          scale: cfg_scale,
+          prompt,
+          count: 1,
+        }),
+      }).then((res) => res.json());
+    }
 
     return {
       image: data[0].image,
