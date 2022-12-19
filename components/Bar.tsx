@@ -5,6 +5,7 @@ import {
   ImagePlus,
   Regex,
   TextCursorInput,
+  View,
 } from "lucide-react";
 
 export type Bar = {
@@ -13,7 +14,7 @@ export type Bar = {
 
 export function Bar({ onCreateNode }: Bar) {
   return (
-    <div className="absolute bottom-[15px] left-[50%] -translate-x-[50%] bg-neutral-800 rounded flex flex-row overflow-hidden">
+    <div className="absolute left-[15px] top-[4.75rem] bg-neutral-800 rounded flex flex-col overflow-hidden">
       <Button
         onClick={() =>
           onCreateNode({
@@ -124,6 +125,23 @@ export function Bar({ onCreateNode }: Bar) {
       >
         <File size={18} strokeWidth={2} />
       </Button>
+      <Button
+        onClick={() =>
+          onCreateNode({
+            type: "Interrogate",
+            data: {
+              input: {
+                image: "",
+              },
+              output: {
+                prompt: "",
+              },
+            },
+          })
+        }
+      >
+        <View size={18} strokeWidth={2} />
+      </Button>
     </div>
   );
 }
@@ -139,7 +157,7 @@ function Button({
 }) {
   return (
     <button
-      className={`p-2 hover:bg-white/10 active:bg-white/20 duration-200 border-r border-white/10 first-of-type:border-l-transparent last-of-type:border-r-transparent ${
+      className={`p-2 hover:bg-white/10 active:bg-white/20 duration-200 border-t border-white/10 first-of-type:border-t-transparent ${
         active && "bg-black/10 text-indigo-400"
       }`}
       onClick={onClick ?? undefined}

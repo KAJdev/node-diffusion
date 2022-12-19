@@ -175,7 +175,7 @@ export namespace Image {
         reader.readAsDataURL(init_b);
       });
 
-      data = await fetch("https://api.diffusion.chat/init", {
+      data = await fetch("https://api.prototyped.ai/init", {
         method: "POST",
         body: JSON.stringify({
           steps,
@@ -186,7 +186,7 @@ export namespace Image {
         }),
       }).then((res) => res.json());
     } else {
-      data = await fetch("https://api.diffusion.chat/image", {
+      data = await fetch("https://api.prototyped.ai/image", {
         method: "POST",
         body: JSON.stringify({
           steps,

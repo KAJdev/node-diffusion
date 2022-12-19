@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { Play, Trash2, Lock, Unlock, Repeat } from "lucide-react";
-import { memo } from "react";
+import { ImageIcon, Lock, Play, Repeat, Trash2, Unlock } from "lucide-react";
+import React from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   Handle,
   Position,
@@ -8,13 +9,14 @@ import {
   NodeToolbar,
   getIncomers,
   getConnectedEdges,
-  useUpdateNodeInternals,
   Node,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { Nodes } from ".";
 import { Label } from "../Label";
 import {
+  Content,
+  ImageVariable,
   NumberVariable,
   Output,
   Outputs,
@@ -25,29 +27,32 @@ import {
   Variables,
 } from "../Node";
 
-export type Transformer = NodeProps<{
+export type Interrogate = NodeProps<{
   locked: boolean;
   running: boolean;
   repeating: boolean;
   input: {
-    prompt: string;
-    temperature: number;
-    top_p: number;
-    frequency_penalty: number;
+    image: string;
   };
   output: {
-    prediction: string;
+    prompt: string;
   };
 }>;
 
-export function Transformer(node: Transformer) {
+export function Interrogate(node: Interrogate) {
   const { editNode, deleteNode } = Nodes.use((state) => ({
     editNode: state.editNode,
     deleteNode: state.deleteNode,
   }));
 
+  const [loaded, setLoaded] = useState(false);
+
   return (
-    <Panel name="GPT-3" running={node.data.running} selected={node.selected}>
+    <Panel
+      name="CLIP Interrogation"
+      running={node.data.running}
+      selected={node.selected}
+    >
       <Toolbar show={node.selected}>
         {!node.data.running && (
           <ToolButton
@@ -88,50 +93,26 @@ export function Transformer(node: Transformer) {
       </Toolbar>
 
       <Variables>
-        <NumberVariable
-          name="temperature"
-          value={node.data.input.temperature || 0.9}
-          label="Temperature"
-          nodeID={node.id}
-        />
-        <NumberVariable
-          name="top_p"
-          value={node.data.input.top_p || 0.9}
-          label="Top P"
-          nodeID={node.id}
-        />
-        <NumberVariable
-          name="frequency_penalty"
-          value={node.data.input.frequency_penalty || 0.0}
-          label="Frequency Penalty"
-          nodeID={node.id}
-        />
-        <TextVariable
-          name="prompt"
-          value={node.data.input.prompt || ""}
-          label="Prompt"
-          nodeID={node.id}
-        />
+        <ImageVariable nodeID={node.id} label="Image" name="image" />
       </Variables>
-
       <Outputs>
         <Output
-          label="Prediction"
-          name="prediction"
+          label="Prompt"
           nodeID={node.id}
+          name="prompt"
           type="string"
-          value={node.data.output.prediction || ""}
+          value={node.data.output.prompt}
         />
       </Outputs>
     </Panel>
   );
 }
 
-export namespace Transformer {
+export namespace Interrogate {
   export async function run(node: Node): Promise<any> {
-    const { prompt, temperature, top_p, frequency_penalty } = node.data.input;
+    const { image } = node.data.input;
 
-    if (!prompt) {
+    if (!image) {
       if (node.data.repeating) {
         // disable repeating
         Nodes.use.getState().editNode(node.id, {
@@ -139,29 +120,32 @@ export namespace Transformer {
         });
       }
       return {
-        prediction: "",
+        prompt: node.data.output.prompt,
       };
     }
 
-    const response = await fetch("https://api.prototyped.ai/text", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-        temperature,
-        top_p,
-        frequency_penalty,
-      }),
+    // image is probably a dataurl or a regular image. Need to fetch and convert to base64
+    const img_d = await fetch(image);
+    const img_b = await img_d.blob();
+    const img_b64 = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result);
+      };
+      reader.readAsDataURL(img_b);
     });
 
-    const json = await response.json();
+    const data = await fetch("https://api.prototyped.ai/interrogate", {
+      method: "POST",
+      body: JSON.stringify({
+        image: img_b64,
+      }),
+    }).then((res) => res.json());
 
     return {
-      prediction: json.choices.pop().text,
+      prompt: data.prompt,
     };
   }
 
-  export const Memo = memo(Transformer);
+  export const Memo = memo(Interrogate);
 }

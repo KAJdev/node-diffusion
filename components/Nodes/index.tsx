@@ -4,6 +4,7 @@ import { RandomNumber } from "./RandomNumber";
 import { Concat } from "./Concat";
 import { RegexReplace } from "./RegexReplace";
 import { LoadImage } from "./LoadImage";
+import { Interrogate } from "./Interrogate";
 import create from "zustand";
 import {
   Connection,
@@ -34,7 +35,15 @@ export type NodesState = {
 };
 
 export declare namespace Nodes {
-  export { Image, Transformer, RandomNumber, Concat, RegexReplace, LoadImage };
+  export {
+    Image,
+    Transformer,
+    RandomNumber,
+    Concat,
+    RegexReplace,
+    LoadImage,
+    Interrogate,
+  };
 }
 
 export namespace Nodes {
@@ -44,6 +53,7 @@ export namespace Nodes {
   Nodes.Concat = Concat;
   Nodes.RegexReplace = RegexReplace;
   Nodes.LoadImage = LoadImage;
+  Nodes.Interrogate = Interrogate;
 
   export const nodeTypes = {
     Image: Nodes.Image.Memo,
@@ -52,6 +62,7 @@ export namespace Nodes {
     Concat: Nodes.Concat.Memo,
     RegexReplace: Nodes.RegexReplace.Memo,
     LoadImage: Nodes.LoadImage.Memo,
+    Interrogate: Nodes.Interrogate.Memo,
   };
 
   export const use = create<NodesState>((set, get) => ({
@@ -130,6 +141,8 @@ export namespace Nodes {
         return Nodes.RegexReplace.run(node);
       case "LoadImage":
         return Nodes.LoadImage.run(node);
+      case "Interrogate":
+        return Nodes.Interrogate.run(node);
       default:
         throw new Error(`Node type ${node.type} not found`);
     }
