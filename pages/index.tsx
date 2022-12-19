@@ -13,8 +13,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="w-screen h-screen flex flex-col">
-        <AppBar />
         <ReactFlowProvider>
+          <AppBar />
           <Editor />
         </ReactFlowProvider>
       </main>

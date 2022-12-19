@@ -7,12 +7,15 @@ import {
   TextCursorInput,
   View,
 } from "lucide-react";
+import { useReactFlow } from "reactflow";
 
 export type Bar = {
-  onCreateNode: (newNode: { type: string; data: any }) => void;
+  onCreateNode: (newNode: { type: string; data: any; position: any }) => void;
 };
 
 export function Bar({ onCreateNode }: Bar) {
+  const flow = useReactFlow();
+
   return (
     <div className="absolute left-[15px] top-[4.75rem] bg-neutral-800 rounded flex flex-col overflow-hidden">
       <Button
@@ -30,6 +33,10 @@ export function Bar({ onCreateNode }: Bar) {
                 image: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -50,6 +57,10 @@ export function Bar({ onCreateNode }: Bar) {
                 prediction: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -68,6 +79,10 @@ export function Bar({ onCreateNode }: Bar) {
                 number: 0.5,
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -86,6 +101,10 @@ export function Bar({ onCreateNode }: Bar) {
                 final: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -105,6 +124,10 @@ export function Bar({ onCreateNode }: Bar) {
                 final: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -120,6 +143,10 @@ export function Bar({ onCreateNode }: Bar) {
                 image: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >
@@ -137,6 +164,10 @@ export function Bar({ onCreateNode }: Bar) {
                 prompt: "",
               },
             },
+            position: flow.project({
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+            }),
           })
         }
       >

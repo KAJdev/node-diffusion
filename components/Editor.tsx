@@ -36,8 +36,6 @@ export function Editor() {
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, addNode } =
     Nodes.use(selector, shallow);
 
-  // const flow = useReactFlow();
-
   return (
     <>
       <ReactFlow
@@ -75,11 +73,6 @@ export function Editor() {
       </ReactFlow>
       <Bar
         onCreateNode={(newNode) => {
-          // const pos = flow.project({
-          //   x: window.innerWidth / 2,
-          //   y: window.innerHeight / 2,
-          // });
-
           addNode({
             ...newNode,
             data: {
@@ -89,10 +82,6 @@ export function Editor() {
               repeating: false,
             },
             id: Math.random().toString(),
-            position: {
-              x: 0,
-              y: 0,
-            },
           });
         }}
       />
